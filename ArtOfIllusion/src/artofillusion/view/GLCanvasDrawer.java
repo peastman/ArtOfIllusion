@@ -21,10 +21,11 @@ import java.nio.*;
 import java.util.*;
 import java.lang.ref.*;
 
-import javax.media.opengl.*;
+import com.jogamp.opengl.*;
+import com.jogamp.opengl.awt.*;
 
 import buoy.event.*;
-import com.sun.opengl.util.*;
+import com.jogamp.opengl.util.*;
 
 /** This is a CanvasDrawer which uses OpenGL to render the contents of a ViewerCanvas. */
 
