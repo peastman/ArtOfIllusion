@@ -56,7 +56,8 @@ public class GLCanvasDrawer implements CanvasDrawer
   public GLCanvasDrawer(ViewerCanvas view)
   {
     this.view = view;
-    canvas = new GLCanvas();
+    GLCapabilities caps = new GLCapabilities(GLProfile.get(GLProfile.GL2));
+    canvas = new GLCanvas(caps);
     canvas.addGLEventListener(new CanvasListener());
   }
   
@@ -104,7 +105,7 @@ public class GLCanvasDrawer implements CanvasDrawer
     if (camera.getObjectToView() == lastObjectTransform)
       return;
     lastObjectTransform = camera.getObjectToView();
-    gl.glMatrixMode(GL.GL_PROJECTION);
+    gl.glMatrixMode(GL2.GL_PROJECTION);
     gl.glLoadIdentity();
     double scale = -1.0/camera.getViewToScreen().m11;
     if (view.isPerspective())
@@ -112,7 +113,7 @@ public class GLCanvasDrawer implements CanvasDrawer
     else
       gl.glOrtho(-0.5*bounds.width*scale, 0.5*bounds.width*scale, -0.5*bounds.height*scale, 0.5*bounds.height*scale, minDepth, maxDepth);
     Mat4 toView = lastObjectTransform;
-    gl.glMatrixMode(GL.GL_MODELVIEW);
+    gl.glMatrixMode(GL2.GL_MODELVIEW);
     gl.glLoadMatrixd(new double [] {
         -toView.m11, toView.m21, -toView.m31, toView.m41,
         -toView.m12, toView.m22, -toView.m32, toView.m42,
@@ -128,13 +129,13 @@ public class GLCanvasDrawer implements CanvasDrawer
     if (lastObjectTransform == null)
       return;
     lastObjectTransform = null;
-    gl.glMatrixMode(GL.GL_PROJECTION);
+    gl.glMatrixMode(GL2.GL_PROJECTION);
     gl.glLoadIdentity();
     if (view.isPerspective())
       gl.glFrustum(0.0, bounds.width, 0.0, bounds.height, minDepth, maxDepth);
     else
       gl.glOrtho(0.0, bounds.width, 0.0, bounds.height, minDepth, maxDepth);
-    gl.glMatrixMode(GL.GL_MODELVIEW);
+    gl.glMatrixMode(GL2.GL_MODELVIEW);
     gl.glLoadIdentity();
   }
   
@@ -161,7 +162,7 @@ public class GLCanvasDrawer implements CanvasDrawer
     if (lightingEnabled)
     {
       lightingEnabled = false;
-      gl.glDisable(GL.GL_LIGHTING);
+      gl.glDisable(GL2.GL_LIGHTING);
     }
     lastColor = color;
     gl.glColor3f(color.getRed()*COLOR_SCALE, color.getGreen()*COLOR_SCALE, color.getBlue()*COLOR_SCALE);
@@ -175,9 +176,9 @@ public class GLCanvasDrawer implements CanvasDrawer
     {
       lightingEnabled = lighting;
       if (lighting)
-        gl.glEnable(GL.GL_LIGHTING);
+        gl.glEnable(GL2.GL_LIGHTING);
       else
-        gl.glDisable(GL.GL_LIGHTING);
+        gl.glDisable(GL2.GL_LIGHTING);
     }
     lastColor = null;
   }
@@ -279,7 +280,7 @@ public class GLCanvasDrawer implements CanvasDrawer
     float y1 = bounds.height-y;
     double d = -(minDepth+0.001);
     double scale = (view.isPerspective() ? -d/minDepth : 1.0);
-    gl.glBegin(GL.GL_QUADS);
+    gl.glBegin(GL2.GL_QUADS);
     gl.glVertex3d(x*scale, y1*scale, d);
     gl.glVertex3d(x*scale, (y1-height)*scale, d);
     gl.glVertex3d((x+width)*scale, (y1-height)*scale, d);
@@ -314,7 +315,7 @@ public class GLCanvasDrawer implements CanvasDrawer
       vertBuffer.put(y1*scale);
       vertBuffer.put(d);
     }
-    gl.glDrawArrays(GL.GL_QUADS, 0, box.size()*4);
+    gl.glDrawArrays(GL2.GL_QUADS, 0, box.size()*4);
   }
 
   /** Render a filled box at a specified depth in the rendered image. */
@@ -326,7 +327,7 @@ public class GLCanvasDrawer implements CanvasDrawer
     prepareSolidColor(color);
     float y1 = bounds.height-y;
     float d = (float) -depth;
-    gl.glBegin(GL.GL_QUADS);
+    gl.glBegin(GL2.GL_QUADS);
     float scale = (float) (view.isPerspective() ? depth/minDepth : 1.0);
     gl.glVertex3f(x*scale, y1*scale, d);
     gl.glVertex3f(x*scale, (y1-height)*scale, d);
@@ -363,7 +364,7 @@ public class GLCanvasDrawer implements CanvasDrawer
       vertBuffer.put(y1*scale);
       vertBuffer.put(d);
     }
-    gl.glDrawArrays(GL.GL_QUADS, 0, box.size()*4);
+    gl.glDrawArrays(GL2.GL_QUADS, 0, box.size()*4);
   }
 
   /** Draw a line into the rendered image. */
@@ -507,10 +508,10 @@ public class GLCanvasDrawer implements CanvasDrawer
       prepareShading(true);
       TextureSpec spec = new TextureSpec();
       shader.getTextureSpec(spec);
-      gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_AMBIENT_AND_DIFFUSE, FloatBuffer.wrap(new float [] {spec.diffuse.getRed(), spec.diffuse.getGreen(), spec.diffuse.getBlue(), 1.0f}));
-      gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_SPECULAR, FloatBuffer.wrap(new float [] {spec.hilight.getRed(), spec.hilight.getGreen(), spec.hilight.getBlue(), 1.0f}));
-      gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_EMISSION, FloatBuffer.wrap(new float [] {spec.emissive.getRed(), spec.emissive.getGreen(), spec.emissive.getBlue(), 1.0f}));
-      gl.glMaterialf(GL.GL_FRONT_AND_BACK, GL.GL_SHININESS, (float) ((1.0-spec.roughness)*127.0+1.0));
+      gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GL2.GL_AMBIENT_AND_DIFFUSE, FloatBuffer.wrap(new float [] {spec.diffuse.getRed(), spec.diffuse.getGreen(), spec.diffuse.getBlue(), 1.0f}));
+      gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GL2.GL_SPECULAR, FloatBuffer.wrap(new float [] {spec.hilight.getRed(), spec.hilight.getGreen(), spec.hilight.getBlue(), 1.0f}));
+      gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GL2.GL_EMISSION, FloatBuffer.wrap(new float [] {spec.emissive.getRed(), spec.emissive.getGreen(), spec.emissive.getBlue(), 1.0f}));
+      gl.glMaterialf(GL.GL_FRONT_AND_BACK, GL2.GL_SHININESS, (float) ((1.0-spec.roughness)*127.0+1.0));
       
       // Fill in buffers with the vertices and normals.
       
@@ -728,7 +729,7 @@ public class GLCanvasDrawer implements CanvasDrawer
     double height = (useTextureRectangle ? record.height : 1.0);
     gl.glEnable(imageRenderMode);
     gl.glBindTexture(imageRenderMode, record.getTextureId());
-    gl.glBegin(GL.GL_QUADS);
+    gl.glBegin(GL2.GL_QUADS);
     gl.glVertex3d(p1.x, p1.y, p1.z);
     gl.glTexCoord2d(width, 0.0);
     gl.glVertex3d(p2.x, p2.y, p2.z);
@@ -803,11 +804,11 @@ public class GLCanvasDrawer implements CanvasDrawer
   {
     prepareView2D();
     prepareDepthTest(false);
-    gl.glEnable(GL.GL_ALPHA_TEST);
+    gl.glEnable(GL2.GL_ALPHA_TEST);
     double d = -(minDepth+0.001);
     gl.glRasterPos3d(x, Math.max(0, bounds.height-image.height-y), d);
     gl.glDrawPixels(image.width, image.height, GL.GL_RGBA, GL.GL_UNSIGNED_BYTE, image.data);
-    gl.glDisable(GL.GL_ALPHA_TEST);
+    gl.glDisable(GL2.GL_ALPHA_TEST);
   }
 
   /** Draw the outline of a Shape into the canvas. */
@@ -821,7 +822,7 @@ public class GLCanvasDrawer implements CanvasDrawer
 
   public void fillShape(Shape shape, Color color)
   {
-    drawShape(shape, color, GL.GL_POLYGON);
+    drawShape(shape, color, GL2.GL_POLYGON);
   }
 
   /** This is called by both drawShape() and fillShape(). */
@@ -863,23 +864,23 @@ public class GLCanvasDrawer implements CanvasDrawer
     public void init(GLAutoDrawable drawable)
     {
       GL gl = drawable.getGL();
-      gl.glShadeModel(GL.GL_SMOOTH);
-      gl.glLightfv(GL.GL_LIGHT0, GL.GL_POSITION, FloatBuffer.wrap(new float [] {0.0f, 0.0f, 1.0f, 0.0f}));
-      gl.glLightfv(GL.GL_LIGHT0, GL.GL_DIFFUSE, FloatBuffer.wrap(new float [] {0.8f, 0.8f, 0.8f, 1.0f}));
-      gl.glEnable(GL.GL_LIGHT0);
-      gl.glLightModelfv(GL.GL_LIGHT_MODEL_AMBIENT, FloatBuffer.wrap(new float [] {0.1f, 0.1f, 0.1f, 1.0f}));
-      gl.glLightModeli(GL.GL_LIGHT_MODEL_TWO_SIDE, GL.GL_TRUE);
+      gl.glShadeModel(GL2.GL_SMOOTH);
+      gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_POSITION, FloatBuffer.wrap(new float [] {0.0f, 0.0f, 1.0f, 0.0f}));
+      gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_DIFFUSE, FloatBuffer.wrap(new float [] {0.8f, 0.8f, 0.8f, 1.0f}));
+      gl.glEnable(GL2.GL_LIGHT0);
+      gl.glLightModelfv(GL2.GL_LIGHT_MODEL_AMBIENT, FloatBuffer.wrap(new float [] {0.1f, 0.1f, 0.1f, 1.0f}));
+      gl.glLightModeli(GL2.GL_LIGHT_MODEL_TWO_SIDE, GL.GL_TRUE);
       gl.glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-      gl.glEnableClientState(GL.GL_VERTEX_ARRAY);
-      gl.glEnableClientState(GL.GL_NORMAL_ARRAY);
-      gl.glAlphaFunc(GL.GL_GREATER, 0.0f);
+      gl.glEnableClientState(GL2.GL_VERTEX_ARRAY);
+      gl.glEnableClientState(GL2.GL_NORMAL_ARRAY);
+      gl.glAlphaFunc(GL2.GL_GREATER, 0.0f);
       if (imageRenderMode == -1)
       {
         // Determine whether non-power-of-2 textures are supported.
 
         if (gl.glGetString(GL.GL_EXTENSIONS).indexOf("GL_EXT_texture_rectangle") > -1)
         {
-          imageRenderMode = GL.GL_TEXTURE_RECTANGLE_ARB;
+          imageRenderMode = GL2.GL_TEXTURE_RECTANGLE_ARB;
           useTextureRectangle = true;
         }
         else
@@ -1000,11 +1001,11 @@ public class GLCanvasDrawer implements CanvasDrawer
       gl.glGenTextures(1, textureId, 0);
       gl.glBindTexture(imageRenderMode, textureId[0]);
       gl.glPixelStorei(GL.GL_UNPACK_ALIGNMENT, 1);
-      gl.glTexParameteri(imageRenderMode, GL.GL_TEXTURE_WRAP_S, GL.GL_CLAMP);
-      gl.glTexParameteri(imageRenderMode, GL.GL_TEXTURE_WRAP_T, GL.GL_CLAMP);
+      gl.glTexParameteri(imageRenderMode, GL.GL_TEXTURE_WRAP_S, GL2.GL_CLAMP);
+      gl.glTexParameteri(imageRenderMode, GL.GL_TEXTURE_WRAP_T, GL2.GL_CLAMP);
       gl.glTexParameteri(imageRenderMode, GL.GL_TEXTURE_MAG_FILTER, GL.GL_NEAREST);
       gl.glTexParameteri(imageRenderMode, GL.GL_TEXTURE_MIN_FILTER, GL.GL_NEAREST);
-      gl.glTexEnvf(GL.GL_TEXTURE_ENV, GL.GL_TEXTURE_ENV_MODE, GL.GL_DECAL);
+      gl.glTexEnvf(GL2.GL_TEXTURE_ENV, GL2.GL_TEXTURE_ENV_MODE, GL2.GL_DECAL);
       gl.glTexImage2D(imageRenderMode, 0, GL.GL_RGBA, width, height, 0, GL.GL_RGBA, GL.GL_UNSIGNED_BYTE, glImage.data);
       textureReferences.add(new TextureReference(this));
     }
