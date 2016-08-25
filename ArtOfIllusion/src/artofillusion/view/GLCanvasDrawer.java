@@ -21,6 +21,7 @@ import java.nio.*;
 import java.util.*;
 import java.lang.ref.*;
 
+import com.jogamp.common.nio.*;
 import com.jogamp.opengl.*;
 import com.jogamp.opengl.awt.*;
 
@@ -202,8 +203,8 @@ public class GLCanvasDrawer implements CanvasDrawer
   {
     if (vertBuffer == null || vertBuffer.capacity() < requiredSize)
     {
-      vertBuffer = BufferUtil.newFloatBuffer(requiredSize);
-      normBuffer = BufferUtil.newFloatBuffer(requiredSize);
+      vertBuffer = Buffers.newDirectFloatBuffer(requiredSize);
+      normBuffer = Buffers.newDirectFloatBuffer(requiredSize);
       gl.glVertexPointer(3, GL.GL_FLOAT, 0, vertBuffer);
       gl.glNormalPointer(GL.GL_FLOAT, 0, normBuffer);
     }
