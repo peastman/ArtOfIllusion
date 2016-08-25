@@ -948,6 +948,14 @@ public class GLCanvasDrawer implements CanvasDrawer
     public void displayChanged(GLAutoDrawable drawable, boolean arg1, boolean arg2)
     {
     }
+
+    /*
+     * Marker method in interface GL, allows to dispose of native resources
+     */
+    @Override
+    public void dispose(GLAutoDrawable drawable)
+    {
+    }
   }
 
   /** This inner class represents an image that is ready to be drawn into the GLCanvas. */
