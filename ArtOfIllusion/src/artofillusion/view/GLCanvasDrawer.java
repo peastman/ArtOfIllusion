@@ -864,7 +864,7 @@ public class GLCanvasDrawer implements CanvasDrawer
   {
     public void init(GLAutoDrawable drawable)
     {
-      GL gl = drawable.getGL();
+      GL2 gl = (GL2) drawable.getGL();
       gl.glShadeModel(GL2.GL_SMOOTH);
       gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_POSITION, FloatBuffer.wrap(new float [] {0.0f, 0.0f, 1.0f, 0.0f}));
       gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_DIFFUSE, FloatBuffer.wrap(new float [] {0.8f, 0.8f, 0.8f, 1.0f}));
@@ -899,7 +899,7 @@ public class GLCanvasDrawer implements CanvasDrawer
     public void display(GLAutoDrawable drawable)
     {
       view.prepareCameraForRendering();
-      gl = drawable.getGL();
+      gl = (GL2) drawable.getGL();
       Color background = ViewerCanvas.backgroundColor;
       gl.glClearColor(background.getRed()/255.0f, background.getGreen()/255.0f, background.getBlue()/255.0f, 0.0f);
       gl.glClear(GL.GL_COLOR_BUFFER_BIT+GL.GL_DEPTH_BUFFER_BIT);
