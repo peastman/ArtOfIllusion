@@ -33,7 +33,7 @@ public class GLCanvasDrawer implements CanvasDrawer
 {
   private ViewerCanvas view;
   private GLCanvas canvas;
-  private GL gl;
+  private GL2 gl;
   private Rectangle bounds;
   private Mat4 lastObjectTransform;
   private Color lastColor;
